@@ -46,14 +46,28 @@ public class Hangman
 			infile.close();
 			/* Main part of program */
 			Random randomGen = new Random();
-			String[] guesses = new String[36];
+			char[] guesses = new char[36];
+			int numGuesses;
+			int guessesLeft;
 			char guess;
-			while (true){
-				String nextWord = wordlist[randomGen.nextInt(numWords)];
+			boolean found;
+			numGuesses = 0;
+			guessesLeft = 8;
+			String nextWord = wordlist[randomGen.nextInt(numWords)];
+			while (guessesLeft > 0){
 				String stars = "";
 				for (int n = 0; n < nextWord.length(); n++){
-					if (nextWord.substring(n, n + 1).equals(" ")){
+					found = false;
+					for (int j = 0; n < numGuesses; j++){
+						if (guesses[j] == nextWord.charAt(n)){
+							found = true;
+						}
+					}
+					if (nextWord.charAt(n) == ' '){
 						stars += ' ';
+					}
+					else if (found){
+						stars += nextWord.charAt(n);
 					}
 					else{
 						stars += '*';
@@ -61,6 +75,23 @@ public class Hangman
 				}
 				System.out.println(stars);
 				guess = input.next().charAt(0);
+				/* Check if already guessed */
+				found = false;
+				for (int n = 0; n < numGuesses; n++){
+					if (guesses[n] == guess){
+						found = true;
+					}
+				}
+				if (found){
+					System.out.println("You already guessed that.");
+				}
+				else{
+					System.out.println("Wrong!");
+					guesses[numGuesses] = guess; // THIS DOES NOT WORK
+					numGuesses++;
+					guessesLeft--;
+				}
+				System.out.println("You have " + guessesLeft + " guesses left.");
 			}
 		}
 		catch(Exception e){
