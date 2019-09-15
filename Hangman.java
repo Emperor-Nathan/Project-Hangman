@@ -46,52 +46,85 @@ public class Hangman
 			infile.close();
 			/* Main part of program */
 			Random randomGen = new Random();
-			char[] guesses = new char[36];
+			String guesses = "";
 			int numGuesses;
 			int guessesLeft;
 			char guess;
 			boolean found;
+			boolean correct;
+			boolean complete;
 			numGuesses = 0;
 			guessesLeft = 8;
 			String nextWord = wordlist[randomGen.nextInt(numWords)];
+			StringBuilder stars = new StringBuilder();
+			for (int n = 0; n < nextWord.length(); n++){
+				if (nextWord.charAt(n) == ' '){
+					stars.append(' ');
+				}
+				else{
+					stars.append('*');
+					complete = false;
+				}
+			}
 			while (guessesLeft > 0){
-				String stars = "";
+				complete = true;
 				for (int n = 0; n < nextWord.length(); n++){
 					found = false;
-					for (int j = 0; n < numGuesses; j++){
-						if (guesses[j] == nextWord.charAt(n)){
+					for (int j = 0; j < numGuesses; j++){
+						if (guesses.charAt(j) == nextWord.charAt(n)){
 							found = true;
 						}
 					}
 					if (nextWord.charAt(n) == ' '){
-						stars += ' ';
+						stars.replace(n, n + 1, " ");
 					}
 					else if (found){
-						stars += nextWord.charAt(n);
+						stars.replace(n, n + 1, nextWord.substring(n, n + 1));
 					}
 					else{
-						stars += '*';
+						stars.replace(n, n + 1, "*");
+						complete = false;
 					}
 				}
+				System.out.println();
 				System.out.println(stars);
+				System.out.println();
+				if (complete){
+					System.out.println("You win!");
+					break;
+				}
 				guess = input.next().charAt(0);
 				/* Check if already guessed */
 				found = false;
+				correct = false;
 				for (int n = 0; n < numGuesses; n++){
-					if (guesses[n] == guess){
+					if (guesses.charAt(n) == guess){
 						found = true;
+					}
+				}
+				for (int n = 0; n < nextWord.length(); n++){
+					if (nextWord.charAt(n) == guess){
+						correct = true;
 					}
 				}
 				if (found){
 					System.out.println("You already guessed that.");
 				}
+				else if (correct){
+					System.out.println("Correct!");
+					guesses += guess;
+					numGuesses++;
+				}
 				else{
 					System.out.println("Wrong!");
-					guesses[numGuesses] = guess; // THIS DOES NOT WORK
+					guesses += guess;
 					numGuesses++;
 					guessesLeft--;
 				}
-				System.out.println("You have " + guessesLeft + " guesses left.");
+				System.out.println("You have " + guessesLeft + " guesses left.\n");
+			}
+			if (guessesLeft == 0){
+				System.out.println("The word was \"" + nextWord + "\".");
 			}
 		}
 		catch(Exception e){
